@@ -17,6 +17,7 @@ import fr.free.nrw.commons.databinding.FragmentPendingUploadsBinding
 import fr.free.nrw.commons.di.CommonsDaggerSupportFragment
 import fr.free.nrw.commons.utils.DialogUtil.showAlertDialog
 import fr.free.nrw.commons.utils.ViewUtil
+import timber.log.Timber
 import java.util.Locale
 import javax.inject.Inject
 
@@ -41,6 +42,15 @@ class PendingUploadsFragment :
 
     private var contributionsList = mutableListOf<Contribution>()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Initialize presenter in onCreate to survive rotation
+        if (!::pendingUploadsPresenter.isInitialized) {
+            Timber.d("Initializing pendingUploadsPresenter in onCreate")
+            pendingUploadsPresenter.onAttachView(this)
+        }
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is UploadProgressActivity) {
@@ -55,7 +65,6 @@ class PendingUploadsFragment :
     ): View {
         super.onCreate(savedInstanceState)
         binding = FragmentPendingUploadsBinding.inflate(inflater, container, false)
-        pendingUploadsPresenter.onAttachView(this)
         initAdapter()
         return binding.root
     }
@@ -81,38 +90,38 @@ class PendingUploadsFragment :
         pendingUploadsPresenter.setup()
         pendingUploadsPresenter.totalContributionList
             .observe(viewLifecycleOwner) { list: PagedList<Contribution> ->
-            contributionsSize = list.size
-            contributionsList = mutableListOf()
-            var pausedOrQueuedUploads = 0
-            list.forEach {
-                if (it != null) {
-                    if (it.state == STATE_PAUSED ||
-                        it.state == STATE_QUEUED ||
-                        it.state == STATE_IN_PROGRESS
-                    ) {
-                        contributionsList.add(it)
-                    }
-                    if (it.state == STATE_PAUSED || it.state == STATE_QUEUED) {
-                        pausedOrQueuedUploads++
+                contributionsSize = list.size
+                contributionsList = mutableListOf()
+                var pausedOrQueuedUploads = 0
+                list.forEach {
+                    if (it != null) {
+                        if (it.state == STATE_PAUSED ||
+                            it.state == STATE_QUEUED ||
+                            it.state == STATE_IN_PROGRESS
+                        ) {
+                            contributionsList.add(it)
+                        }
+                        if (it.state == STATE_PAUSED || it.state == STATE_QUEUED) {
+                            pausedOrQueuedUploads++
+                        }
                     }
                 }
-            }
-            if (contributionsSize == 0) {
-                binding.nopendingTextView.visibility = View.VISIBLE
-                binding.pendingUplaodsLl.visibility = View.GONE
-                uploadProgressActivity.hidePendingIcons()
-            } else {
-                binding.nopendingTextView.visibility = View.GONE
-                binding.pendingUplaodsLl.visibility = View.VISIBLE
-                adapter.submitList(list)
-                binding.progressTextView.setText("$contributionsSize uploads left")
-                if ((pausedOrQueuedUploads == contributionsSize) || CommonsApplication.isPaused) {
-                    uploadProgressActivity.setPausedIcon(true)
+                if (contributionsSize == 0) {
+                    binding.nopendingTextView.visibility = View.VISIBLE
+                    binding.pendingUplaodsLl.visibility = View.GONE
+                    uploadProgressActivity.hidePendingIcons()
                 } else {
-                    uploadProgressActivity.setPausedIcon(false)
+                    binding.nopendingTextView.visibility = View.GONE
+                    binding.pendingUplaodsLl.visibility = View.VISIBLE
+                    adapter.submitList(list)
+                    binding.progressTextView.setText("$contributionsSize uploads left")
+                    if ((pausedOrQueuedUploads == contributionsSize) || CommonsApplication.isPaused) {
+                        uploadProgressActivity.setPausedIcon(true)
+                    } else {
+                        uploadProgressActivity.setPausedIcon(false)
+                    }
                 }
             }
-        }
     }
 
     /**
@@ -147,7 +156,15 @@ class PendingUploadsFragment :
     /**
      * Pauses all the ongoing uploads.
      */
-    fun pauseUploads() = pendingUploadsPresenter.pauseUploads()
+    fun pauseUploads() {
+        if (::pendingUploadsPresenter.isInitialized) {
+            Timber.d("Pausing uploads via presenter")
+            pendingUploadsPresenter.pauseUploads()
+        } else {
+            Timber.w("Presenter not initialized, cannot pause uploads")
+            ViewUtil.showShortToast(requireContext(), "Cannot pause uploads, please try again")
+        }
+    }
 
     /**
      * Cancels all the uploads after getting a confirmation from the user using Dialog.

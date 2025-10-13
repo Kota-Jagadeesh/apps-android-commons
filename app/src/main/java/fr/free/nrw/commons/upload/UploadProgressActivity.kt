@@ -10,7 +10,9 @@ import fr.free.nrw.commons.ViewPagerAdapter
 import fr.free.nrw.commons.contributions.ContributionDao
 import fr.free.nrw.commons.databinding.ActivityUploadProgressBinding
 import fr.free.nrw.commons.theme.BaseActivity
+import fr.free.nrw.commons.utils.ViewUtil
 import fr.free.nrw.commons.utils.applyEdgeToEdgeAllInsets
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -42,7 +44,7 @@ class UploadProgressActivity : BaseActivity() {
         binding.uploadProgressViewPager.setAdapter(viewPagerAdapter)
         binding.uploadProgressViewPager.setId(R.id.upload_progress_view_pager)
         binding.uploadProgressTabLayout.setupWithViewPager(binding.uploadProgressViewPager)
-        binding.toolbarBinding.toolbar.title = getString(R.string.uploads)
+        binding.toolbarBinding.toolbar.title = getString(R.string.Uploads)
         setSupportActionBar(binding.toolbarBinding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -119,9 +121,16 @@ class UploadProgressActivity : BaseActivity() {
                                     getString(R.string.pause),
                                 ).setIcon(R.drawable.pause_icon)
                                 .setOnMenuItemClickListener {
-                                    pendingUploadsFragment!!.pauseUploads()
-                                    setPausedIcon(true)
-                                    true
+                                    if (pendingUploadsFragment?.isAdded == true) {
+                                        Timber.d("Triggering pauseUploads on PendingUploadsFragment")
+                                        pendingUploadsFragment!!.pauseUploads()
+                                        setPausedIcon(true)
+                                        true
+                                    } else {
+                                        Timber.w("PendingUploadsFragment not added, cannot pause")
+                                        ViewUtil.showShortToast(this, "Cannot pause uploads, please try again")
+                                        false
+                                    }
                                 }.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
                         }
                         if (menu!!.findItem(R.id.cancel_icon) == null) {
@@ -133,8 +142,7 @@ class UploadProgressActivity : BaseActivity() {
                                     getString(R.string.cancel),
                                 ).setIcon(R.drawable.ic_cancel_upload)
                                 .setOnMenuItemClickListener {
-                                    pendingUploadsFragment!!.deleteUploads()
-                                    true
+                                    (pendingUploadsFragment?.takeIf { it.isAdded }?.deleteUploads() ?: false) as Boolean
                                 }.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
                         }
                     } else {
@@ -147,7 +155,7 @@ class UploadProgressActivity : BaseActivity() {
                                     getString(R.string.resume),
                                 ).setIcon(R.drawable.play_icon)
                                 .setOnMenuItemClickListener {
-                                    pendingUploadsFragment!!.restartUploads()
+                                    pendingUploadsFragment?.takeIf { it.isAdded }?.restartUploads() ?: false
                                     setPausedIcon(false)
                                     true
                                 }.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
@@ -161,7 +169,7 @@ class UploadProgressActivity : BaseActivity() {
                             .add(Menu.NONE, R.id.retry_icon, Menu.NONE, getString(R.string.retry))
                             .setIcon(R.drawable.ic_refresh_24dp)
                             .setOnMenuItemClickListener {
-                                failedUploadsFragment!!.restartUploads()
+                                failedUploadsFragment?.takeIf { it.isAdded }?.restartUploads() ?: false
                                 true
                             }.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
                     }
@@ -174,7 +182,7 @@ class UploadProgressActivity : BaseActivity() {
                                 getString(R.string.cancel),
                             ).setIcon(R.drawable.ic_cancel_upload)
                             .setOnMenuItemClickListener {
-                                failedUploadsFragment!!.deleteUploads()
+                                failedUploadsFragment?.takeIf { it.isAdded }?.deleteUploads() ?: false
                                 true
                             }.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
                     }
