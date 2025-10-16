@@ -377,12 +377,15 @@ after opening the app.
     override fun onBackPressed() {
         when (activeFragment) {
             ActiveFragment.CONTRIBUTIONS -> {
+                // Means that contribution fragment is visible
                 if (contributionsFragment?.backButtonClicked() != true) {
+                    // the back press, let the activity do so
                     super.onBackPressed()
                     showTabs()
                 }
             }
             ActiveFragment.NEARBY -> {
+                // Means that nearby fragment is visible
                 if (nearbyParentFragment?.backButtonClicked() != true) {
                     nearbyParentFragment?.let {
                         supportFragmentManager.beginTransaction().remove(it).commit()
@@ -402,6 +405,7 @@ after opening the app.
                 }
             }
             ActiveFragment.BOOKMARK -> {
+                // Means that bookmark fragment is visible
                 bookmarkFragment?.onBackPressed()
                 showTabs()
             }
