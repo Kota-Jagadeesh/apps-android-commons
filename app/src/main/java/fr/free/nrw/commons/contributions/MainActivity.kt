@@ -377,37 +377,37 @@ after opening the app.
     override fun onBackPressed() {
         when (activeFragment) {
             ActiveFragment.CONTRIBUTIONS -> {
-            // Means that contribution fragment is visible
-            if (contributionsFragment?.backButtonClicked() != true) { //If this one does not want to handle
-                // the back press, let the activity do so
-                super.onBackPressed()
-                }
-            }
-        ActiveFragment.NEARBY -> {
-            // Means that nearby fragment is visible
-            if (nearbyParentFragment?.backButtonClicked() != true) {
-            nearbyParentFragment?.let {
-                supportFragmentManager.beginTransaction().remove(it).commit()
-                    }
-                setSelectedItemId(NavTab.CONTRIBUTIONS.code())
-                }
-            }
-         ActiveFragment.EXPLORE -> {
-            // Explore Fragment is visible
-            if (exploreFragment?.onBackPressed() != true) {
-                if (applicationKvStore?.getBoolean("login_skipped") == true) {
+                if (contributionsFragment?.backButtonClicked() != true) {
                     super.onBackPressed()
-                } else {
-                    setSelectedItemId(NavTab.CONTRIBUTIONS.code())
-                    }
+                    showTabs()
                 }
             }
-         ActiveFragment.BOOKMARK -> {
-            // Means that bookmark fragment is visible
-            bookmarkFragment?.onBackPressed()
+            ActiveFragment.NEARBY -> {
+                if (nearbyParentFragment?.backButtonClicked() != true) {
+                    nearbyParentFragment?.let {
+                        supportFragmentManager.beginTransaction().remove(it).commit()
+                    }
+                    setSelectedItemId(NavTab.CONTRIBUTIONS.code())
+                    showTabs()
+                }
             }
-         else -> {
-            super.onBackPressed()
+            ActiveFragment.EXPLORE -> {
+                if (exploreFragment?.onBackPressed() != true) {
+                    if (applicationKvStore?.getBoolean("login_skipped") == true) {
+                        super.onBackPressed()
+                    } else {
+                        setSelectedItemId(NavTab.CONTRIBUTIONS.code())
+                    }
+                    showTabs()
+                }
+            }
+            ActiveFragment.BOOKMARK -> {
+                bookmarkFragment?.onBackPressed()
+                showTabs()
+            }
+            else -> {
+                super.onBackPressed()
+                showTabs()
             }
         }
     }
