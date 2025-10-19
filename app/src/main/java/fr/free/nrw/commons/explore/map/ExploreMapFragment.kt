@@ -13,6 +13,7 @@ import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.location.Location
 import android.location.LocationManager
+import fr.free.nrw.commons.explore.map.animateToWithCallback
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -91,7 +92,7 @@ class ExploreMapFragment : CommonsDaggerSupportFragment(), ExploreMapContract.Vi
     private var isDarkTheme = false
     private var isPermissionDenied = false
     private var lastKnownLocation: LatLng? = null // last location of user
-    private var recenterToUserLocation = false // true is recenter is needed (ie. when current location is in visible map boundaries)
+    private var recenterToUserLocation = false // true if recenter is needed (ie. when current location is in visible map boundaries)
     private var clickedMarker: BaseMarker? = null
     private var mapCenter: GeoPoint? = null
     private var lastMapFocus: GeoPoint? = null
@@ -106,6 +107,12 @@ class ExploreMapFragment : CommonsDaggerSupportFragment(), ExploreMapContract.Vi
     private var binding: FragmentExploreMapBinding? = null
     var mediaList: MutableList<Media>? = null
         private set
+
+    // Debouncing fields
+    private var lastAnimationTime: Long = 0
+    private val ANIMATION_DEBOUNCE_MS = 1000L // Increased debounce time to prevent ANR
+    private var pendingAnimationGeoPoint: GeoPoint? = null
+    private var isAnimating: Boolean = false
 
     @Inject
     lateinit var liveDataConverter: LiveDataConverter
@@ -173,7 +180,7 @@ class ExploreMapFragment : CommonsDaggerSupportFragment(), ExploreMapContract.Vi
         super.onViewCreated(view, savedInstanceState)
         setSearchThisAreaButtonVisibility(false)
         binding!!.tvAttribution.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-             Html.fromHtml(getString(R.string.map_attribution), Html.FROM_HTML_MODE_LEGACY)
+            Html.fromHtml(getString(R.string.map_attribution), Html.FROM_HTML_MODE_LEGACY)
         } else {
             Html.fromHtml(getString(R.string.map_attribution))
         }
@@ -190,9 +197,6 @@ class ExploreMapFragment : CommonsDaggerSupportFragment(), ExploreMapContract.Vi
         isDarkTheme = systemThemeUtils.isDeviceInNightMode()
         isPermissionDenied = false
         presenter!!.attachView(this)
-
-        initViews()
-        presenter!!.setActionListeners(applicationKvStore)
 
         Configuration.getInstance().load(
             requireContext(),
@@ -254,16 +258,27 @@ class ExploreMapFragment : CommonsDaggerSupportFragment(), ExploreMapContract.Vi
                     mylocation.longitude = getLastMapFocus()!!.longitude
                     val distance = mylocation.distanceTo(dest_location) //in meters
                     if (getLastMapFocus() != null) {
-                        if (isNetworkConnectionEstablished() && (event.getX() > 0
-                                    || event.getY() > 0)
-                        ) {
+                        if (isNetworkConnectionEstablished()) {
                             setSearchThisAreaButtonVisibility(distance > 2000.0)
+                            val currentTime = System.currentTimeMillis()
+                            val newGeoPoint = GeoPoint(dest_location.latitude, dest_location.longitude)
+                            // Only queue an animation if not currently animating AND the debounce time has passed
+                            if (distance > 2000.0 && (currentTime - lastAnimationTime) > ANIMATION_DEBOUNCE_MS) {
+                                moveCameraToPosition(newGeoPoint)
+                                lastAnimationTime = currentTime
+                                Timber.d("Animating to new position: $newGeoPoint")
+                            } else if (distance > 2000.0) {
+                                // If animation is skipped due to debouncing, update the pending point
+                                pendingAnimationGeoPoint = newGeoPoint
+                                Timber.d("Animation skipped or queued (debounced): isAnimating=$isAnimating, timeSinceLast=${currentTime - lastAnimationTime}")
+                            } else {
+                                pendingAnimationGeoPoint = null // Clear pending if distance is too small
+                            }
                         }
                     } else {
                         setSearchThisAreaButtonVisibility(false)
                     }
                 }
-
                 return true
             }
 
@@ -1012,7 +1027,54 @@ class ExploreMapFragment : CommonsDaggerSupportFragment(), ExploreMapContract.Vi
      * @param geoPoint The GeoPoint representing the new camera position for the map.
      */
     private fun moveCameraToPosition(geoPoint: GeoPoint?) {
-        binding!!.mapView.controller.animateTo(geoPoint)
+        if (geoPoint == null || binding?.mapView == null) {
+            Timber.d("Skipping moveCameraToPosition: geoPoint or mapView is null")
+            return
+        }
+
+        if (isAnimating) {
+            Timber.d("Queueing animation: Map is already animating")
+            pendingAnimationGeoPoint = geoPoint
+            return
+        }
+
+        val currentCenter = binding!!.mapView.mapCenter
+        val distance = FloatArray(1)
+        Location.distanceBetween(
+            currentCenter.latitude, currentCenter.longitude,
+            geoPoint.latitude, geoPoint.longitude,
+            distance
+        )
+        if (distance[0] < 200.0 && binding!!.mapView.zoomLevelDouble == ZOOM_LEVEL.toDouble()) {
+            Timber.d("Skipping animation: New position too close to current center (distance: ${distance[0]}m)")
+            // If there's a pending animation, check if it can be run now
+            pendingAnimationGeoPoint?.let {
+                if ((System.currentTimeMillis() - lastAnimationTime) > ANIMATION_DEBOUNCE_MS) {
+                    // This is a debounced call, so we should run it
+                    Timber.d("Running pending animation due to debounced call")
+                    pendingAnimationGeoPoint = null
+                    moveCameraToPosition(it)
+                } else {
+                    Timber.d("Pending animation still within debounce period. Skipping.")
+                }
+            }
+            return
+        }
+        isAnimating = true
+        // *** FIX: Using the renamed extension function and explicit lambda syntax to resolve compiler ambiguity ***
+        binding!!.mapView.controller.animateToWithCallback(geoPoint) {
+            isAnimating = false
+            Timber.d("Animation completed for position: $geoPoint")
+            // Check for a pending animation after the current one completes
+            pendingAnimationGeoPoint?.let {
+                pendingAnimationGeoPoint =
+                    null // Clear before calling to prevent infinite recursion
+                lastAnimationTime = System.currentTimeMillis() // Reset time for the next animation
+                Timber.d("Starting queued animation to: $it")
+                moveCameraToPosition(it)
+            }
+        }
+        binding!!.mapView.invalidate()
     }
 
     /**
@@ -1024,7 +1086,51 @@ class ExploreMapFragment : CommonsDaggerSupportFragment(), ExploreMapContract.Vi
      * @param speed    Speed of animation
      */
     private fun moveCameraToPosition(geoPoint: GeoPoint?, zoom: Double, speed: Long) {
-        binding!!.mapView.controller.animateTo(geoPoint, zoom, speed)
+        if (geoPoint == null || binding?.mapView == null) {
+            Timber.d("Skipping moveCameraToPosition: geoPoint or mapView is null")
+            return
+        }
+
+        if (isAnimating) {
+            Timber.d("Queueing animation: Map is already animating (with zoom/speed)")
+            pendingAnimationGeoPoint = geoPoint // Note: only stores the GeoPoint, not zoom/speed
+            return
+        }
+
+        val currentCenter = binding!!.mapView.mapCenter
+        val distance = FloatArray(1)
+        Location.distanceBetween(
+            currentCenter.latitude, currentCenter.longitude,
+            geoPoint.latitude, geoPoint.longitude,
+            distance
+        )
+        if (distance[0] < 200.0 && binding!!.mapView.zoomLevelDouble == zoom) {
+            Timber.d("Skipping animation: New position too close to current center (distance: ${distance[0]}m)")
+            pendingAnimationGeoPoint?.let {
+                if ((System.currentTimeMillis() - lastAnimationTime) > ANIMATION_DEBOUNCE_MS) {
+                    Timber.d("Running pending animation due to debounced call (with zoom/speed)")
+                    pendingAnimationGeoPoint = null
+                    moveCameraToPosition(it)
+                } else {
+                    Timber.d("Pending animation still within debounce period. Skipping.")
+                }
+            }
+            return
+        }
+
+        isAnimating = true
+// FIX: Using the renamed extension function and explicit lambda syntax to resolve compiler ambiguity
+        binding!!.mapView.controller.animateToWithCallback(geoPoint, zoom, speed, {
+            isAnimating = false
+            Timber.d("Animation completed for position: $geoPoint, zoom: $zoom")
+            // Check for a pending animation after the current one completes
+            pendingAnimationGeoPoint?.let {
+                pendingAnimationGeoPoint = null // Clear before calling to prevent infinite recursion
+                lastAnimationTime = System.currentTimeMillis() // Reset time for the next animation
+                moveCameraToPosition(it) // Reverts to the simpler moveCameraToPosition
+            }
+        })
+        binding!!.mapView.invalidate()
     }
 
     override fun getLastMapFocus(): LatLng? = if (lastMapFocus == null) {
@@ -1051,6 +1157,7 @@ class ExploreMapFragment : CommonsDaggerSupportFragment(), ExploreMapContract.Vi
             LatLng(51.506255446947776, -0.07483536015053005, 1f)
         }
     }
+
 
     override fun getMapFocus(): LatLng? = LatLng(
         binding!!.mapView.mapCenter.latitude,
