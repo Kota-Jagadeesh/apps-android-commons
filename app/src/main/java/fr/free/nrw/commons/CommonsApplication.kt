@@ -49,6 +49,9 @@ import timber.log.Timber.DebugTree
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Named
+import android.content.res.Configuration
+import android.os.LocaleList
+import java.util.*
 
 @AcraCore(
     buildConfigClass = BuildConfig::class,
@@ -383,6 +386,38 @@ class CommonsApplication : MultiDexApplication() {
         const val NOTIFICATION_CHANNEL_ID_ALL: String = "CommonsNotificationAll"
 
         const val FEEDBACK_EMAIL_TEMPLATE_HEADER: String = "-- Technical information --"
+
+        @JvmStatic
+        fun setLocale(context: Context, languageCode: String): Context {
+            val locale = if (languageCode.isEmpty()) Locale.getDefault() else Locale(languageCode)
+            Locale.setDefault(locale)
+
+            val config = Configuration(context.resources.configuration)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                config.setLocale(locale)
+                val localeList = LocaleList(locale)
+                LocaleList.setDefault(localeList)
+                config.setLocales(localeList)
+            } else {
+                @Suppress("DEPRECATION")
+                config.locale = locale
+            }
+
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                context.createConfigurationContext(config)
+            } else {
+                @Suppress("DEPRECATION")
+                context.resources.updateConfiguration(config, context.resources.displayMetrics)
+                context
+            }
+        }
+
+        @JvmStatic
+        fun reloadActivity(activity: Activity) {
+            activity.finish()
+            activity.startActivity(activity.intent)
+            activity.overridePendingTransition(0, 0)
+        }
 
         /**
          * Constants End

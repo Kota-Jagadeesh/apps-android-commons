@@ -10,9 +10,10 @@ import javax.inject.Named
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.di.CommonsDaggerAppCompatActivity
 import fr.free.nrw.commons.kvstore.JsonKvStore
+import fr.free.nrw.commons.settings.Prefs
+import fr.free.nrw.commons.CommonsApplication
 import fr.free.nrw.commons.utils.SystemThemeUtils
 import io.reactivex.disposables.CompositeDisposable
-
 
 abstract class BaseActivity : CommonsDaggerAppCompatActivity() {
 
@@ -28,11 +29,23 @@ abstract class BaseActivity : CommonsDaggerAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // ────── Apply saved UI language instantly ──────
+        val savedLang = defaultKvStore.getString(Prefs.APP_UI_LANGUAGE, "") ?: ""
+        if (savedLang.isNotEmpty()) {
+            val newContext = CommonsApplication.setLocale(this, savedLang)
+            resources.updateConfiguration(
+                newContext.resources.configuration,
+                newContext.resources.displayMetrics
+            )
+        }
+        // ───────────────────────────────────────────────
+
         wasPreviouslyDarkTheme = systemThemeUtils.isDeviceInNightMode()
         setTheme(if (wasPreviouslyDarkTheme) R.style.DarkAppTheme else R.style.LightAppTheme)
 
         val fontScale = android.provider.Settings.System.getFloat(
-            baseContext.contentResolver,
+            contentResolver,
             android.provider.Settings.System.FONT_SCALE,
             1f
         )
@@ -41,7 +54,6 @@ abstract class BaseActivity : CommonsDaggerAppCompatActivity() {
     }
 
     override fun onResume() {
-        // Restart activity if theme is changed
         if (wasPreviouslyDarkTheme != systemThemeUtils.isDeviceInNightMode()) {
             recreate()
         }
@@ -49,13 +61,10 @@ abstract class BaseActivity : CommonsDaggerAppCompatActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         compositeDisposable.clear()
+        super.onDestroy()
     }
 
-    /**
-     * Apply fontScale on device
-     */
     fun adjustFontScale(configuration: Configuration, scale: Float) {
         configuration.fontScale = scale
         val metrics = resources.displayMetrics

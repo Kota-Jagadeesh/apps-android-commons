@@ -489,8 +489,19 @@ class ExploreMapFragment : CommonsDaggerSupportFragment(), ExploreMapContract.Vi
 
     override fun onLocationChangedMedium(latLng: LatLng) = Unit
 
-    override fun isNetworkConnectionEstablished(): Boolean =
-        isInternetConnectionEstablished(requireActivity())
+    private fun isNetworkConnectionEstablished(): Boolean {
+        return try {
+            // Use applicationContext -> always attached
+            val cm = requireContext().applicationContext
+                .getSystemService(Context.CONNECTIVITY_SERVICE) as
+                    android.net.ConnectivityManager
+            cm.activeNetworkInfo?.isConnected == true
+        } catch (e: IllegalStateException) {
+            false               // fragment detached -> treat as no network
+        } catch (e: Exception) {
+            false
+        }
+    }
 
     override fun populatePlaces(curlatLng: LatLng?) {
         val nearbyPlacesInfoObservable: Observable<ExplorePlacesInfo?>

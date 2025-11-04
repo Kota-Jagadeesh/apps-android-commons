@@ -2,22 +2,32 @@ package fr.free.nrw.commons.settings
 
 import android.os.Bundle
 import android.view.MenuItem
+import fr.free.nrw.commons.CommonsApplication
 import fr.free.nrw.commons.databinding.ActivitySettingsBinding
+import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.theme.BaseActivity
 import fr.free.nrw.commons.utils.applyEdgeToEdgeAllInsets
+import javax.inject.Inject
+import javax.inject.Named
 
-
-/**
- * allows the user to change the settings
- */
 class SettingsActivity : BaseActivity() {
+
+    @Inject
+    @field:Named("default_preferences")
+    lateinit var defaultKvStore: JsonKvStore
 
     private lateinit var binding: ActivitySettingsBinding
 
-    /**
-     * to be called when the activity starts
-     * @param savedInstanceState the previously saved state
-     */
+    // Listener that instantly restarts the app when the UI language changes
+    private val languageChangeListener = object : JsonKvStore.OnChangeListener {
+        override fun onChange(key: String, value: Any?) {
+            if (key == Prefs.APP_UI_LANGUAGE) {
+                defaultKvStore.unregisterChangeListener(this)
+                CommonsApplication.reloadActivity(this@SettingsActivity)
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
@@ -27,19 +37,14 @@ class SettingsActivity : BaseActivity() {
 
         setSupportActionBar(binding.toolbarBinding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        // Watch for language preference changes
+        defaultKvStore.registerChangeListener(languageChangeListener)
     }
 
-    // Get an action bar
-    /**
-     * takes care of actions taken after the creation has happened
-     * @param savedInstanceState the saved state
-     */
-    override fun onPostCreate(savedInstanceState: Bundle?) {
-        super.onPostCreate(savedInstanceState)
-//        if (settingsDelegate == null) {
-//            settingsDelegate = AppCompatDelegate.create(this, null)
-//        }
-//        settingsDelegate?.onPostCreate(savedInstanceState)
+    override fun onDestroy() {
+        defaultKvStore.unregisterChangeListener(languageChangeListener)
+        super.onDestroy()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -47,11 +52,6 @@ class SettingsActivity : BaseActivity() {
         return true
     }
 
-    /**
-     * Handle action-bar clicks
-     * @param item the selected item
-     * @return true on success, false on failure
-     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
