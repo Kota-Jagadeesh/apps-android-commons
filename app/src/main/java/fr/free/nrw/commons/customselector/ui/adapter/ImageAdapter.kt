@@ -129,15 +129,11 @@ class ImageAdapter(
     private var ioDispatcher: CoroutineDispatcher = Dispatchers.IO
     private val scope: CoroutineScope = MainScope()
 
-    /**
-     * NEW: Maximum number of images that can be selected.
-     */
+    //maximum number of images that can be selected.
     private var maxUploadLimit: Int = MAX_IMAGE_COUNT
 
-    /**
-     * NEW: Set maximum number of images allowed for upload.
-     */
 
+     //set maximum number of images allowed for upload.
     fun setMaxUploadLimit(limit: Int) {
         maxUploadLimit = limit
     }
@@ -368,9 +364,9 @@ class ImageAdapter(
             // Notify listener of deselection to update UI
             imageSelectListener.onSelectedImagesChanged(selectedImages, numberOfSelectedImagesMarkedAsNotForUpload)
         } else {
-            // NEW: Check the maximum limit before allowing selection
+            //check the maximum limit before allowing the selection
             if (!singleSelection && selectedImages.size >= maxUploadLimit) {
-                // Limit reached, show a Toast and prevent selection
+                // limit reached, show a toast and prevent selection
                 Toast.makeText(
                     context,
                     context.getString(
@@ -379,7 +375,7 @@ class ImageAdapter(
                     ),
                     Toast.LENGTH_SHORT
                 ).show()
-                return // Exit the function, preventing selection
+                return //exit the function, preventing selection
             }
 
             // Prevent adding the same image multiple times
