@@ -82,6 +82,19 @@
               android:layout_height="wrap_content"
               android:orientation="vertical">
 
+                <com.google.android.material.textfield.TextInputLayout
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_marginBottom="@dimen/standard_gap"
+                  android:hint="@string/caption">
+                    <EditText
+                      android:id="@+id/et_title"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:inputType="textCapSentences"
+                      android:maxLength="200"
+                      />
+                </com.google.android.material.textfield.TextInputLayout>
                 <LinearLayout
                   android:id="@+id/ll_container_actions"
                   android:layout_width="match_parent"
@@ -208,4 +221,3 @@
 
     </androidx.cardview.widget.CardView>
 </RelativeLayout>
-

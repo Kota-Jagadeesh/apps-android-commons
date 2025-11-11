@@ -317,6 +317,8 @@ dependencies {
     androidTestImplementation(libs.androidx.annotation)
     androidTestImplementation(libs.mockwebserver)
     androidTestImplementation(libs.androidx.uiautomator)
+    androidTestImplementation(libs.android.sdk)
+    androidTestImplementation(libs.mockito.core)
 
     // Debugging
     debugImplementation(libs.leakcanary.android)
