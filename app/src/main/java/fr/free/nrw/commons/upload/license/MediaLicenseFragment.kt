@@ -75,7 +75,16 @@ class MediaLicenseFragment : UploadBaseFragment(), MediaLicenseContract.View {
             )
         }
 
-        initPresenter()
+        // defensivee null check for presenter to prevent NullPointerException on recreation
+        try {
+            if (::presenter.isInitialized) {
+                presenter.onAttachView(this)
+            } else {
+                Timber.e("Presenter was not initialized in MediaLicenseFragment.onViewCreated. Dagger injection failed during recreation?")
+            }
+        } catch (e: NullPointerException) {
+            Timber.e(e, "NullPointerException when trying to access presenter in onViewCreated. Cannot attach view.")
+        }
         initLicenseSpinner()
         presenter.getLicenses()
     }
@@ -121,10 +130,15 @@ class MediaLicenseFragment : UploadBaseFragment(), MediaLicenseContract.View {
     }
 
     override fun setLicenses(licenses: List<String>?) {
-        adapter!!.clear()
-        this.licenses = licenses
-        adapter!!.addAll(this.licenses!!)
-        adapter!!.notifyDataSetChanged()
+        // fixx: ensure adapter is not null before clearing/adding
+        if (adapter != null) {
+            adapter!!.clear()
+            this.licenses = licenses
+            if (this.licenses != null) {
+                adapter!!.addAll(this.licenses!!)
+            }
+            adapter!!.notifyDataSetChanged()
+        }
     }
 
     override fun setSelectedLicense(license: String?) {
