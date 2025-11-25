@@ -119,8 +119,6 @@ class PendingUploadsFragment :
      * Cancels a specific upload after getting a confirmation from the user using Dialog.
      */
     override fun deleteUpload(contribution: Contribution?) {
-        if (!::pendingUploadsPresenter.isInitialized) return // defensive Check
-
         val activity = requireActivity()
         val locale = Locale.getDefault()
         showAlertDialog(
@@ -142,29 +140,19 @@ class PendingUploadsFragment :
     /**
      * Restarts all the paused uploads.
      */
-    fun restartUploads() {
-        if (::pendingUploadsPresenter.isInitialized) {
-            pendingUploadsPresenter.restartUploads(
-                contributionsList, 0, requireContext().applicationContext
-            )
-        }
-    }
+    fun restartUploads() = pendingUploadsPresenter.restartUploads(
+        contributionsList, 0, requireContext().applicationContext
+    )
 
     /**
      * Pauses all the ongoing uploads.
      */
-    fun pauseUploads() {
-        if (::pendingUploadsPresenter.isInitialized) {
-            pendingUploadsPresenter.pauseUploads()
-        }
-    }
+    fun pauseUploads() = pendingUploadsPresenter.pauseUploads()
 
     /**
      * Cancels all the uploads after getting a confirmation from the user using Dialog.
      */
     fun deleteUploads() {
-        if (!::pendingUploadsPresenter.isInitialized) return
-
         val activity = requireActivity()
         val locale = Locale.getDefault()
         showAlertDialog(
