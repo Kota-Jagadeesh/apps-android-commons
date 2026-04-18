@@ -73,10 +73,22 @@ class MediaClient
          * @param userName the username
          * @return
          */
-        fun getMediaListForUser(userName: String): Single<List<Media>> =
-            continuationRequest("user_", userName) {
-                mediaInterface.getMediaListForUser(userName, 10, it)
-            }
+    fun getMediaListForUser(userName: String): Single<List<Media>> {
+        return getMediaListFromSearch("user:$userName", 30, 0)
+    }
+
+    /**
+     * Rename the NEW function to avoid naming conflicts.
+     */
+    fun getMediaListForUserSearch(
+        query: String,
+        userName: String,
+        pageSize: Int,
+        offset: Int
+    ): Single<List<Media>> {
+        val filteredQuery = "$query user:$userName"
+        return getMediaListFromSearch(filteredQuery, pageSize, offset)
+    }
 
         /**
          * This method takes a keyword as input and returns a list of  Media objects filtered using image generator query

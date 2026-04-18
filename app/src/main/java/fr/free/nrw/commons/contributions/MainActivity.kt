@@ -17,6 +17,7 @@ import fr.free.nrw.commons.bookmarks.BookmarkFragment
 import fr.free.nrw.commons.contributions.ContributionsFragment.Companion.newInstance
 import fr.free.nrw.commons.databinding.MainBinding
 import fr.free.nrw.commons.explore.ExploreFragment
+import fr.free.nrw.commons.explore.SearchActivity
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.location.LocationServiceManager
 import fr.free.nrw.commons.media.MediaDetailPagerFragment
@@ -438,6 +439,16 @@ after opening the app.
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            R.id.action_search -> {
+                // Check if the current visible fragment is the ContributionsFragment
+                val intent = Intent(this, SearchActivity::class.java)
+                if (activeFragment == ActiveFragment.CONTRIBUTIONS) {
+                    // If we are on the contributions tab, tell SearchActivity to open "My Media"
+                    intent.putExtra("source", "contributions")
+                }
+                startActivity(intent)
+                return true
+            }
             R.id.upload_tab -> {
                 startActivity(Intent(this, UploadProgressActivity::class.java))
                 return true

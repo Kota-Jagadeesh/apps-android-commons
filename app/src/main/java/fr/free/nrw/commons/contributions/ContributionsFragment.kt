@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
@@ -38,6 +39,7 @@ import fr.free.nrw.commons.campaigns.models.Campaign
 import fr.free.nrw.commons.contributions.MainActivity.ActiveFragment
 import fr.free.nrw.commons.databinding.FragmentContributionsBinding
 import fr.free.nrw.commons.di.CommonsDaggerSupportFragment
+import fr.free.nrw.commons.explore.SearchActivity
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.location.LatLng
 import fr.free.nrw.commons.location.LocationServiceManager
@@ -235,6 +237,19 @@ class ContributionsFragment : CommonsDaggerSupportFragment(), FragmentManager.On
         }
         setHasOptionsMenu(true)
         return binding!!.root
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_search -> {
+                val intent = Intent(context, SearchActivity::class.java)
+                // This is the trigger for SearchActivity to default to "My Media"
+                intent.putExtra("source", "contributions")
+                startActivity(intent)
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     /**

@@ -55,7 +55,7 @@
             app:tabTextColor="?attr/tabTextColor"
             app:tabMode="scrollable"
             android:layout_below="@id/toolbar_search"
-            android:visibility="gone"
+            android:visibility="visible"
             />
         </com.google.android.material.appbar.AppBarLayout>
         <FrameLayout
@@ -69,11 +69,11 @@
             />
 
         <fr.free.nrw.commons.explore.ParentViewPager
-            android:id="@+id/viewPager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/toolbar_layout"
-            />
+          android:id="@+id/viewPager"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:visibility="visible"
+          />
         <FrameLayout
             android:visibility="gone"
             xmlns:android="http://schemas.android.com/apk/res/android"

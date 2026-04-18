@@ -11,9 +11,14 @@ import javax.inject.Named
 interface SearchMediaFragmentPresenter : PagingContract.Presenter<Media>
 
 class SearchMediaFragmentPresenterImpl
-    @Inject
-    constructor(
-        @Named(CommonsApplicationModule.MAIN_THREAD) mainThreadScheduler: Scheduler,
-        dataSourceFactory: PageableMediaDataSource,
-    ) : BasePagingPresenter<Media>(mainThreadScheduler, dataSourceFactory),
-        SearchMediaFragmentPresenter
+@Inject
+constructor(
+    @Named(CommonsApplicationModule.MAIN_THREAD) mainThreadScheduler: Scheduler,
+    private val dataSourceFactory: PageableMediaDataSource, // Remove 'val' to local if needed, but we need access
+) : BasePagingPresenter<Media>(mainThreadScheduler, dataSourceFactory),
+    SearchMediaFragmentPresenter {
+
+    fun setSearchType(isOwnMedia: Boolean) {
+        dataSourceFactory.ownFiles = isOwnMedia
+    }
+}

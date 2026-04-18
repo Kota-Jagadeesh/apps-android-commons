@@ -38,6 +38,7 @@ class SearchActivity : BaseActivity(), MediaDetailProvider, CategoryImagesCallba
     var recentSearchesDao: RecentSearchesDao? = null
 
     private var searchMediaFragment: SearchMediaFragment? = null
+    private var searchMyMediaFragment: SearchMediaFragment? = null // New
     private var searchCategoryFragment: SearchCategoryFragment? = null
     private var searchDepictionsFragment: SearchDepictionsFragment? = null
     private var recentSearchesFragment: RecentSearchesFragment? = null
@@ -63,6 +64,11 @@ class SearchActivity : BaseActivity(), MediaDetailProvider, CategoryImagesCallba
         binding!!.viewPager.offscreenPageLimit = 2 // Because we want all the fragments to be alive
         binding!!.tabLayout.setupWithViewPager(binding!!.viewPager)
         setTabs()
+        // Check if we should default to "My Media" (Tab index 1)
+        val source = intent.getStringExtra("source")
+        if (source == "contributions") {
+            binding!!.viewPager.currentItem = 1
+        }
         binding!!.searchBox.queryHint = getString(R.string.search_commons)
         binding!!.searchBox.onActionViewExpanded()
         binding!!.searchBox.clearFocus()
@@ -82,23 +88,23 @@ class SearchActivity : BaseActivity(), MediaDetailProvider, CategoryImagesCallba
      * Sets the titles in the tabLayout and fragments in the viewPager
      */
     fun setTabs() {
-        searchMediaFragment = SearchMediaFragment()
-        searchDepictionsFragment = SearchDepictionsFragment()
-        searchCategoryFragment = SearchCategoryFragment()
+        val searchMediaFragment = SearchMediaFragment()
+        // This is the new "My Media" tab logic
+        val searchMyMediaFragment = SearchMediaFragment().apply {
+            arguments = Bundle().apply {
+                putBoolean("isOwnMedia", true)
+            }
+        }
+        val searchCategoryFragment = SearchCategoryFragment()
+        val searchDepictionsFragment = SearchDepictionsFragment()
 
-        viewPagerAdapter!!.setTabs(
-            R.string.search_tab_title_media to searchMediaFragment!!,
-            R.string.search_tab_title_categories to searchCategoryFragment!!,
-            R.string.search_tab_title_depictions to searchDepictionsFragment!!
+        viewPagerAdapter?.setTabs(
+            R.string.search_tab_title_media to searchMediaFragment,
+            R.string.search_tab_title_my_media to searchMyMediaFragment, // Ensure this ID exists in strings.xml
+            R.string.search_tab_title_categories to searchCategoryFragment,
+            R.string.search_tab_title_depictions to searchDepictionsFragment
         )
-        viewPagerAdapter!!.notifyDataSetChanged()
-        compositeDisposable.add(
-            RxSearchView.queryTextChanges(binding!!.searchBox)
-                .takeUntil(RxView.detaches(binding!!.searchBox))
-                .debounce(500, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(::handleSearch, Timber::e)
-        )
+        viewPagerAdapter?.notifyDataSetChanged()
     }
 
     private fun handleSearch(query: CharSequence) {
@@ -118,6 +124,10 @@ class SearchActivity : BaseActivity(), MediaDetailProvider, CategoryImagesCallba
 
             if (isFragmentUIActive(searchCategoryFragment)) {
                 searchCategoryFragment!!.onQueryUpdated(query.toString())
+            }
+            // Add the update for the new fragment
+            if (isFragmentUIActive(searchMyMediaFragment)) {
+                searchMyMediaFragment!!.onQueryUpdated(query.toString())
             }
         } else {
             //Open RecentSearchesFragment
