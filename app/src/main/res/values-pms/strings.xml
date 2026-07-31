@@ -354,6 +354,7 @@
   <string name="share_app_title">Partagé j\'aplicassion</string>
   <string name="rotate">Deje na gira</string>
   <string name="crop">Artajé</string>
+  <string name="blur">Sfumé</string>
   <string name="error_fetching_nearby_places">Impossìbil carié j\'anviron.</string>
   <string name="no_pictures_in_this_area">Gnun-e plance an cost\'àrea</string>
   <string name="no_nearby_places_around">Gnun pòst sì-davzin</string>
