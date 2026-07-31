@@ -354,6 +354,7 @@
   <string name="share_app_title">Partagé j\'aplicassion</string>
   <string name="rotate">Deje na gira</string>
   <string name="crop">Artajé</string>
+  <string name="blur">Sfumé</string>
   <string name="error_fetching_nearby_places">Impossìbil carié j\'anviron.</string>
   <string name="no_pictures_in_this_area">Gnun-e plance an cost\'àrea</string>
   <string name="no_nearby_places_around">Gnun pòst sì-davzin</string>
@@ -698,6 +699,7 @@
   <string name="custom_selector_already_uploaded_image_text">La plancia a l\'é già stàita carià su Comun.</string>
   <string name="custom_selector_over_limit_warning">Për dle rason técniche, l\'aplicassion a peul nen carié an manera afidàbil pi che %1$d plance a la vira. Ël lìmit ëd cariament ëd %1$d a l\'é stàit passà ëd %2$d.</string>
   <string name="custom_selector_dismiss_limit_warning_button_text">Ignoré</string>
+  <string name="custom_selector_duplicates_warning">Cheidun-e dle plance selessionà a son dij dobion e a saran gavà prima ëd carieje.</string>
   <string name="custom_selector_button_limit_text">Max: %1$d</string>
   <string name="custom_selector_limit_error_desc">Eror: Lìmit ëd cariament passà</string>
   <string name="wlm_upload_info">Costa plancia a sarà giontà al concors Wiki a-j veul bin ai monument.</string>

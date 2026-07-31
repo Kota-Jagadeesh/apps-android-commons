@@ -409,6 +409,7 @@
   <string name="share_app_title">شارك التطبيق</string>
   <string name="rotate">تدوير</string>
   <string name="crop">قص</string>
+  <string name="blur">ضبابية</string>
   <string name="error_fetching_nearby_places">تعذر تحميل الأماكن القريبة</string>
   <string name="no_pictures_in_this_area">لا توجد صور في هذه المنطقة</string>
   <string name="no_nearby_places_around">لا توجد أماكن قريبة بالجوار</string>
@@ -762,6 +763,7 @@
   <string name="custom_selector_already_uploaded_image_text">تم تحميل هذه الصورة بالفعل إلى العموم.</string>
   <string name="custom_selector_over_limit_warning">لأسباب فنية، لا يمكن للتطبيق تحميل أكثر من %1$d من الصور مرة واحدة بشكل موثوق. تم تجاوز حد التحميل %1$d بواسطة %2$d .</string>
   <string name="custom_selector_dismiss_limit_warning_button_text">رفض</string>
+  <string name="custom_selector_duplicates_warning">بعض الصور المختارة مكررة وسيتم حذفها قبل التحميل.</string>
   <string name="custom_selector_button_limit_text">الحد الأقصى: %1$d</string>
   <string name="custom_selector_limit_error_desc">خطأ: تجاوز حد التحميل</string>
   <string name="place_state_wlm">دبليو إل إم</string>
