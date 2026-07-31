@@ -286,7 +286,7 @@
   <string name="no_description_found">nie znaleziono opisu</string>
   <string name="nearby_info_menu_commons_article">Strona pliku Commons</string>
   <string name="nearby_info_menu_wikidata_article">Element Wikidanych</string>
-  <string name="nearby_info_menu_wikipedia_article">Artykuł na Wikipedii</string>
+  <string name="nearby_info_menu_wikipedia_article">Artykuł w Wikipedii</string>
   <string name="description_info">Opisz jak najwięcej mediów: Gdzie zostało zrobione? Co to pokazuje? Jaki jest kontekst? Proszę opisać przedmioty lub osoby. Ujawnij informacje, których nie można łatwo odgadnąć, na przykład porę dnia, jeśli jest to krajobraz. Jeśli media pokazują coś niezwykłego, wyjaśnij, co sprawia, że ​​jest to niezwykłe.</string>
   <string name="caption_info">Napisz krótki opis obrazu. Pierwszy podpis zostanie użyty jako tytuł obrazu. Limit 255 znaków.</string>
   <string name="upload_problem_exist">Potencjalne problemy z tym obrazem:</string>
