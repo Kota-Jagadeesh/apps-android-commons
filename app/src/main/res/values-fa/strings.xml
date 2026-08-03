@@ -569,6 +569,7 @@
   <string name="remove_location_warning_title">هشدار حذف موقعیت مکانی</string>
   <string name="location_removed">مکان حذف شد!</string>
   <string name="send_thanks_to_author">تشکر از نویسنده</string>
+  <string name="invalid_login_message">ورود شما منقضی شده است. لطفاً دوباره وارد شوید.</string>
   <string name="talk">بحث</string>
   <string name="cancelling_all_the_uploads">لغو تمام بارگذاری‌ها...</string>
   <string name="uploads">بارگذاری‌ها</string>
