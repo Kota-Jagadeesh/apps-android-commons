@@ -614,9 +614,11 @@ class MediaDetailFragment : CommonsDaggerSupportFragment(), CategoryEditHelper.C
     private fun isOwnUpload(): Boolean {
         val currentUser = getUserName(requireContext())?.trim()
         val uploader = media?.user?.trim()
-        return !currentUser.isNullOrEmpty() &&
-                !uploader.isNullOrEmpty() &&
-                currentUser.equals(uploader, ignoreCase = true)
+        if (currentUser.isNullOrEmpty() || uploader.isNullOrEmpty()) {
+            return false
+        }
+        return currentUser.first().equals(uploader.first(), ignoreCase = true) &&
+                currentUser.drop(1) == uploader.drop(1)
     }
 
     private fun onMediaRefreshed(media: Media) {
