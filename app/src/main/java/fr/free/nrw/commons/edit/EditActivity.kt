@@ -18,6 +18,8 @@ import androidx.core.net.toUri
 import androidx.core.view.WindowInsetsCompat
 import androidx.exifinterface.media.ExifInterface
 import androidx.lifecycle.ViewModelProvider
+import fr.free.nrw.commons.R
+import fr.free.nrw.commons.ajpegtran.Properties
 import fr.free.nrw.commons.databinding.ActivityEditBinding
 import fr.free.nrw.commons.theme.BaseActivity
 import fr.free.nrw.commons.utils.applyEdgeToEdgeBottomInsets
@@ -49,6 +51,7 @@ class EditActivity : BaseActivity() {
     private var originalBitmapWidth = 0
     private var originalBitmapHeight = 0
     private var maxAvailableHeight = 0f
+    private var properties: Properties? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +62,7 @@ class EditActivity : BaseActivity() {
         imageUri = intent.getStringExtra("image") ?: ""
         vm = ViewModelProvider(this)[EditViewModel::class.java]
         vm.initJpegtran(applicationContext, imageUri)
-
+        fetchAndUpdateImageProperties()
         val sourceExif = try {
             ExifInterface(imageUri)
         } catch (e: Exception) {
@@ -138,6 +141,23 @@ class EditActivity : BaseActivity() {
                 toggleApplyEditMode(true)
             }
 
+        }
+    }
+
+    /**
+     * Gets the current image properties and update those properties in [BlurOverlayView].
+     * */
+    private fun fetchAndUpdateImageProperties() {
+        try {
+            properties = vm.getProperties(File(imageUri).toUri())
+            binding.blurOverlay.setImageProperties(properties!!)
+        } catch (e: Exception) {
+            Timber.e(e, "Error getting image properties: ${e.localizedMessage}")
+            Toast.makeText(
+                this@EditActivity,
+                getString(R.string.error_getting_image_properties),
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -270,8 +290,8 @@ class EditActivity : BaseActivity() {
 
         if (regions.isEmpty()) {
             Toast.makeText(
-                this,
-                "Please draw at least one rectangle on the photo",
+                this@EditActivity,
+                getString(R.string.error_blur_no_rectangle),
                 Toast.LENGTH_SHORT
             ).show()
             return
@@ -283,14 +303,18 @@ class EditActivity : BaseActivity() {
 
         try {
             val blurredFile = vm.blurImage(regions, applicationContext.cacheDir)
+            // Update imageUri to point to latest blurred file.
             imageUri = blurredFile.absolutePath
+            // Apply pending rotation.
+            applyPendingRotation()
             // Reload the image displaying the applied blur.
             updateImagePreview()
+            fetchAndUpdateImageProperties()
         } catch (e: Exception) {
-            Timber.e(e, "Failed to apply blur")
+            Timber.e(e, "Failed to apply blur ${e.localizedMessage}")
             Toast.makeText(
                 this@EditActivity,
-                "Error applying blur: ${e.localizedMessage}",
+                getString(R.string.error_applying_blur),
                 Toast.LENGTH_LONG
             ).show()
         }
@@ -301,15 +325,12 @@ class EditActivity : BaseActivity() {
      * in the ImageView, and returns to the main toolbar.
      */
     private fun applyCrop() {
-        val filePath = imageUri.toUri().path
         try {
-            var file = File(filePath.toString())
-            // Apply rotation if pending so crop coordinates match.
-            file = applyPendingRotation(file)
+            // Apply pending rotation if any.
+            applyPendingRotation()
 
-            val properties = vm.getProperties(file.toUri())
-            val actualWidth = properties.width
-            val actualHeight = properties.height
+            val actualWidth = properties!!.width
+            val actualHeight = properties!!.height
             val cropRect = binding.cropOverlay.getCropRect()
             val cropCoords = convertViewCropToImageCrop(cropRect, actualWidth, actualHeight)
 
@@ -324,12 +345,13 @@ class EditActivity : BaseActivity() {
                 imageUri = croppedFile.absolutePath
                 // Update the image preview.
                 updateImagePreview()
+                fetchAndUpdateImageProperties()
             }
         } catch (e: Exception) {
-            Timber.e(e, "applyCrop: Failed to apply crop")
+            Timber.e(e, "applyCrop: Failed to apply crop ${e.localizedMessage}")
             Toast.makeText(
-                this,
-                "Failed to apply crop: ${e.localizedMessage}",
+                this@EditActivity,
+                getString(R.string.failed_to_apply_crop),
                 Toast.LENGTH_LONG
             ).show()
         }
@@ -401,16 +423,18 @@ class EditActivity : BaseActivity() {
 
     /**
      * Applies any pending rotation to the given file via JNI and resets the rotation baseline.
-     * Returns the rotated file, or the original file if no rotation was pending.
      */
-    private fun applyPendingRotation(file: File): File {
+    private fun applyPendingRotation() {
+        val filePath = imageUri.toUri().path
+        val file = File(filePath.toString())
         val relativeRotation = ((imageRotation - startOrientation) % 360 + 360) % 360
-        if (relativeRotation == 0) return file
+        if (relativeRotation == 0) return
         val rotated = vm.rotateImage(file, relativeRotation, applicationContext.cacheDir)
         // Reset rotation baseline since the file is now oriented correctly.
         startOrientation = 0
         imageRotation = 0
-        return rotated
+        // Update imageUri
+        imageUri = rotated.absolutePath
     }
 
     /**
@@ -418,23 +442,22 @@ class EditActivity : BaseActivity() {
      * Saves the edited image.
      */
     private fun saveEditedImage() {
-        val filePath = imageUri.toUri().path
-
         try {
-            var file = File(filePath.toString())
-            file = applyPendingRotation(file)
-
-            val finalPath = file.absolutePath
+            applyPendingRotation()
+            val finalPath = imageUri.toUri().path
             val resultIntent = Intent().apply {
                 putExtra("editedImageFilePath", finalPath)
             }
             setResult(RESULT_OK, resultIntent)
             finish()
         } catch (e: Exception) {
-            Timber.e(e, "saveEditedImage: Exception occurred during save process")
+            Timber.e(
+                e,
+                "saveEditedImage: Exception occurred during save process ${e.localizedMessage}"
+            )
             Toast.makeText(
                 this@EditActivity,
-                "Failed to save image: ${e.localizedMessage}",
+                getString(R.string.failed_to_save_image),
                 Toast.LENGTH_LONG
             ).show()
         }

@@ -367,6 +367,7 @@
   <string name="share_app_title">Comhroinn an Aip</string>
   <string name="rotate">Rothlaigh</string>
   <string name="crop">Bearr</string>
+  <string name="blur">Doiléiriú</string>
   <string name="error_fetching_nearby_places">Níorbh fhéidir áiteanna in aice láimhe a lódáil</string>
   <string name="no_pictures_in_this_area">Níl aon phictiúir sa cheantar seo</string>
   <string name="no_nearby_places_around">Gan aon áiteanna in aice láimhe</string>
@@ -717,6 +718,7 @@
   <string name="custom_selector_already_uploaded_image_text">Tá an íomhá seo uaslódáilte chuig Commons cheana féin.</string>
   <string name="custom_selector_over_limit_warning">Ar chúiseanna teicniúla, ní féidir leis an aip níos mó ná %1$d pictiúr a uaslódáil ag an am céanna go hiontaofa. Tá an teorainn uaslódála de %1$d sáraithe faoi %2$d.</string>
   <string name="custom_selector_dismiss_limit_warning_button_text">Díbhe</string>
+  <string name="custom_selector_duplicates_warning">Is dúblaigh iad cuid de na híomhánna roghnaithe agus bainfear iad sula n-uaslódálfar iad.</string>
   <string name="custom_selector_button_limit_text">Uasmhéid: %1$d</string>
   <string name="custom_selector_limit_error_desc">Earráid: Sáraíodh an Teorainn Uaslódála</string>
   <string name="wlm_upload_info">Cuirfear an íomhá seo isteach sa chomórtas Wiki Loves Monuments</string>

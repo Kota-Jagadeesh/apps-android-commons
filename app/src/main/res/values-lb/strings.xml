@@ -485,6 +485,9 @@
   <string name="place_type">Typ vun der Plaz:</string>
   <string name="nearby_search_hint">Bréck, Musée, Hotel etc.</string>
   <string name="you_must_reset_your_passsword">Beim Aloggen ass eppes schif gaang. Dir musst Äert Passwuert zrécksetzen!</string>
+  <string name="title_for_media">MEDIEN</string>
+  <string name="title_for_child_classes">ËNNERKLASSEN</string>
+  <string name="title_for_parent_classes">IWWERKLASSEN</string>
   <string name="title_for_subcategories">ËNNERKATEGORIEN</string>
   <string name="title_for_parent_categories">IWWERKATEGORIEN</string>
   <string name="upload_nearby_place_found_title">Plaz an der Géigend fonnt</string>
@@ -547,6 +550,7 @@
   <string name="depicts_label">Etikett</string>
   <string name="depicts_description">Beschreiwung</string>
   <string name="menu_view_category_page">Kategoriesäit weisen</string>
+  <string name="menu_view_item_page">Säit vum Element weisen</string>
   <string name="app_ui_language">Sprooch vum Benotzerinterface vun der App</string>
   <string name="remove">Hëlt eng Beschrëftung a Beschreiwung ewech</string>
   <string name="read_help_link">Liest méi</string>
@@ -563,7 +567,7 @@
   <string name="custom_selector_already_uploaded_image_text">Dëst Bild gouf schonn op Commons eropgelueden.</string>
   <string name="wlm_upload_info">Dëst Bild wäert beim Concours Wiki Loves Monuments agereecht ginn.</string>
   <string name="display_monuments">Monumenter weisen</string>
-  <string name="learn_more">FIR MÉI ZE WËSSEN</string>
+  <string name="learn_more">MÉI GEWUER GINN</string>
   <string name="wlm_campaign_title">Wiki Loves Monuments</string>
   <string name="wlm_campaign_description">Wiki Loves Monuments ass een internationale Fotosconcours fir Monumenter, dee vu Wikimedia organiséiert gëtt</string>
   <string name="need_permission">Autorisatioun gëtt gebraucht</string>
@@ -591,7 +595,8 @@
   <string name="report_user">Dëse Benotzer mellen</string>
   <string name="report_content">Dësen Inhalt mellen</string>
   <string name="request_user_block">Ufroe fir dëse Benotzer ze spären</string>
-  <string name="learn_how_to_write_a_useful_caption">Léiert, wéi een nëtzlech Beschrëftunge schreift</string>
+  <string name="learn_how_to_write_a_useful_description">Gitt gewuer, wéi een nëtzlech Beschreiwunge schreift</string>
+  <string name="learn_how_to_write_a_useful_caption">Gitt gewuer, wéi een nëtzlech Beschrëftunge schreift</string>
   <string name="edit_image">Bild änneren</string>
   <string name="edit_location">Plaz änneren</string>
   <string name="location_updated">Plaz aktualiséiert!</string>
@@ -613,6 +618,7 @@
     <item quantity="other">%1$d Biller ausgewielt</item>
   </plurals>
   <string name="nearby_wikitalk">E Problem fir dëst Element u Wikidata mellen</string>
+  <string name="talk">Diskussioun</string>
   <string name="does_not_exist_anymore_no_picture_can_ever_be_taken_of_it">\'%1$s\' gëtt et net méi, et kann keng Foto méi dovunner gemaach ginn.</string>
   <string name="pending">Am Suspens</string>
   <string name="failed">Feelgeschloen</string>
