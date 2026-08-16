@@ -571,7 +571,7 @@ class UploadWorker(
                 .checkPageExistsUsingTitle(
                 "File:$sequenceFileName")
                 .blockingGet()) {
-            val randomHash = (random.nextInt(900) + 100).toString()
+            val randomHash = (random.nextInt(90000) + 10000).toString()
 
             sequenceFileName = if (fileName.indexOf('.') == -1) {
                 // Append the random hash in parentheses if no file extension is present
