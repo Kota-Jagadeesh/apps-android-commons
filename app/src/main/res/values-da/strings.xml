@@ -364,6 +364,11 @@
   <string name="rotate">Rotér</string>
   <string name="crop">Beskær</string>
   <string name="blur">Slør</string>
+  <string name="autoblur">AutoSlør</string>
+  <string name="autodetect_title">Automatisk sløring af ansigter og nummerplader.</string>
+  <string name="autodetect_description">Du kan kassere falske positiver ved hjælp af knappen ❌ for hvert sløringsområde.</string>
+  <string name="autoblur_failed_to_load">Kunne ikke indlæse billede til AutoSlør</string>
+  <string name="autoblur_no_region_detected">Ingen regioner fundet til AutoSlør</string>
   <string name="error_fetching_nearby_places">Kunne ikke indlæse steder i nærheden</string>
   <string name="no_pictures_in_this_area">Ingen billeder i dette område</string>
   <string name="no_nearby_places_around">Ingen steder i nærheden</string>

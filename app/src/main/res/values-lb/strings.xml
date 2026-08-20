@@ -287,6 +287,7 @@
   <string name="search_commons">Op Commons sichen</string>
   <string name="title_activity_search">Sichen</string>
   <string name="search_recent_header">Rezent gesicht:</string>
+  <string name="provider_recent_languages">Rezent Sproochoffroen</string>
   <string name="error_loading_categories">Beim Luede vu Kategorien ass e Feeler geschitt.</string>
   <string name="error_loading_depictions">Beim Luede vu Motiver ass e Feeler geschitt.</string>
   <string name="search_tab_title_media">Medien</string>
@@ -387,6 +388,7 @@
   <string name="upload_flow_all_images_in_set">(Fir all d\'Biller am Set)</string>
   <string name="never_ask_again">Dëst ni méi froen</string>
   <string name="display_location_permission_title">Standuertberechtegungen ufroen</string>
+  <string name="achievements_fetch_failed">Et ass eppes schifgaangen a mir konnten d\'Errongenschaften net ofruffen</string>
   <string name="achievements_fetch_failed_ultimate_achievement">Dir hutt esou vill Kontributioune gemaach, datt eise System fir d\'Berechne vun Errongenschaften iwwerfuerdert ass. Dat ass déi ultimativ Errongenschaft.</string>
   <string name="display_campaigns">Campagnen uweisen</string>
   <string name="show_deletion_button">Läschknäppche weisen</string>
@@ -575,6 +577,7 @@
   <string name="read_help_link">Liest méi</string>
   <string name="media_detail_in_all_languages">An alle Sproochen</string>
   <string name="choose_a_location">Eng Plaz eraussichen</string>
+  <string name="pan_and_zoom_to_adjust">Réckelen a zoome fir unzepassen</string>
   <string name="select_location_location_picker">Plaz eraussichen</string>
   <string name="modify_location">Standuert änneren</string>
   <string name="image_location">Standuert vum Bild</string>
@@ -613,6 +616,7 @@
   <string name="no_location_found_message">Wéi wier et, wann Dir d\'Plaz, wou dës Foto gemaach gouf, derbäisetze géift?\nStanduertdonnéeën hëllefe Wikiediteure fir Är Foto ze fannen, wouduerch se vill méi nëtzlech gëtt.\nMerci!</string>
   <string name="add_location">Standuert derbäisetzen</string>
   <string name="explore_map_details">Detailer</string>
+  <string name="achievements_unavailable_beta">Errongenschafte sinn nëmmen an der Prod-Versioun disponibel. Kuckt wgl. d\'Dokumentatioun fir Entwéckler.</string>
   <string name="select_feedback_data_choice">Deselektionéiert wgl. all Informatiounen, déi Dir net ëffentlech deele wëllt.</string>
   <string name="api_level">API-Level</string>
   <string name="android_version">Android-Versioun</string>

@@ -417,6 +417,11 @@
   <string name="rotate">旋转</string>
   <string name="crop">裁剪</string>
   <string name="blur">模糊</string>
+  <string name="autoblur">自动模糊</string>
+  <string name="autodetect_title">自动模糊人脸和车牌。</string>
+  <string name="autodetect_description">您可以使用每个模糊区域的❌按钮来取消处理。</string>
+  <string name="autoblur_failed_to_load">自动模糊加载图像失败</string>
+  <string name="autoblur_no_region_detected">自动模糊未检测到区域</string>
   <string name="error_fetching_nearby_places">无法加载附近地点</string>
   <string name="no_pictures_in_this_area">此区域没有图片</string>
   <string name="no_nearby_places_around">找不到附近地点</string>
