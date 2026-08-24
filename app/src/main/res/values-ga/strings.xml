@@ -368,6 +368,11 @@
   <string name="rotate">Rothlaigh</string>
   <string name="crop">Bearr</string>
   <string name="blur">Doiléiriú</string>
+  <string name="autoblur">Uath-Dhoiléiriú</string>
+  <string name="autodetect_title">Aghaidheanna agus plátaí ceadúnais ag doiléiriú go huathoibríoch.</string>
+  <string name="autodetect_description">Is féidir leat rudaí bréagacha dearfacha a chaitheamh ar shiúl trí úsáid a bhaint as an gcnaipe ❌ i ngach limistéar doilithe.</string>
+  <string name="autoblur_failed_to_load">Theip ar an íomhá a lódáil le haghaidh Uath-Dhoiléiriú</string>
+  <string name="autoblur_no_region_detected">Níor braitheadh ​​aon réigiúin le haghaidh Uath-Dhoiléiriú</string>
   <string name="error_fetching_nearby_places">Níorbh fhéidir áiteanna in aice láimhe a lódáil</string>
   <string name="no_pictures_in_this_area">Níl aon phictiúir sa cheantar seo</string>
   <string name="no_nearby_places_around">Gan aon áiteanna in aice láimhe</string>

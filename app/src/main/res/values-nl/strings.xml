@@ -379,6 +379,11 @@
   <string name="rotate">Draaien</string>
   <string name="crop">Bijsnijden</string>
   <string name="blur">Vervagen</string>
+  <string name="autoblur">AutoBlur</string>
+  <string name="autodetect_title">Gezichten en kentekenplaten worden automatisch vervaagd.</string>
+  <string name="autodetect_description">U kunt foutpositieven verwijderen door op de knop ❌ van elk vervaagd gebied te klikken.</string>
+  <string name="autoblur_failed_to_load">Afbeelding voor AutoBlur kon niet worden geladen.</string>
+  <string name="autoblur_no_region_detected">Geen regio\'s gedetecteerd voor AutoBlur</string>
   <string name="error_fetching_nearby_places">Kan plaatsen in de buurt niet laden</string>
   <string name="no_pictures_in_this_area">Geen afbeeldingen in dit gebied.</string>
   <string name="no_nearby_places_around">Geen plaatsen in de buurt</string>
